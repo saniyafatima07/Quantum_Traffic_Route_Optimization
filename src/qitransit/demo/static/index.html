@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>qitransit: quantum-inspired vs classical routing, on SUMO</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e1117'/%3E%3Cpath d='M7 23c6 0 3-14 9-14s3 14 9 14' fill='none' stroke='%234cc9f0' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="bar">
+  <div class="brand">
+    <h1 class="mark">qitransit</h1>
+    <span class="tag">quantum-inspired routing, measured on Eclipse SUMO</span>
+  </div>
+  <div class="meta" id="meta"></div>
+</header>
+
+<section id="progress" class="progress">
+  <div class="progress-head">
+    <span id="stage">building the comparison…</span>
+    <button id="rebuild" class="ghost" type="button">rebuild</button>
+  </div>
+  <div class="track"><div class="fill" id="fill"></div></div>
+  <pre id="error" class="error"></pre>
+</section>
+
+<main hidden id="app">
+  <section class="panel cards">
+    <div class="panel-head">
+      <h2>Methods</h2>
+      <p>Every method got the same evaluation budget, the same seed and the same frozen congestion
+         snapshot. Select one to see its routes and its simulated run.</p>
+    </div>
+    <div id="cards" class="card-grid"></div>
+  </section>
+
+  <section class="panel map-panel">
+    <div class="panel-head row">
+      <div>
+        <h2 id="map-title">routes</h2>
+        <p id="map-sub">real Bengaluru network, arterial skeleton</p>
+      </div>
+      <div class="map-controls">
+        <label><input type="checkbox" id="show-base" checked> network</label>
+        <label><input type="checkbox" id="show-points" checked> depot &amp; customers</label>
+        <label><input type="checkbox" id="show-anim" checked> animate fleet</label>
+        <button id="play" class="ghost" type="button">pause</button>
+        <button id="gui" class="primary" type="button">open in SUMO</button>
+      </div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="map" role="img" aria-labelledby="map-title" aria-describedby="map-sub"></canvas>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="scrub">
+      <input type="range" id="scrub" min="0" max="1" step="0.001" value="0"
+             aria-label="simulation time, as a fraction of the run">
+      <span id="scrub-label">t = 0 s</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Where each vehicle is going</h2>
+      <p>For every vehicle on the selected routes: the stop it last reached and the one it is
+         heading for now, read off its simulated position at the playhead above. Scrub or press
+         play to follow them.</p>
+    </div>
+    <div id="fleet-legs" class="legs"></div>
+  </section>
+
+  <section class="two-col">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>What SUMO measured</h2>
+        <p>Headless simulation of the selected method's routes on the same network, same seed.
+           These numbers come from TraCI and SUMO's own output files, not from the objective function.</p>
+      </div>
+      <div id="measured"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Head-to-head</h2>
+        <p id="verdict"></p>
+      </div>
+      <div id="bars"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2 id="conv-title">Convergence</h2>
+      <p id="conv-sub">Best objective found so far, against evaluations spent. The optimiser's own view: solid lines are quantum-inspired,
+         dashed are classical.</p>
+    </div>
+    <canvas id="convergence" class="chart" role="img" aria-labelledby="conv-title" aria-describedby="conv-sub"></canvas>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Full comparison</h2>
+      <p>Modelled columns come from the optimiser's objective. Measured columns come from SUMO.
+         Lower is better everywhere except completion, where higher is.</p>
+    </div>
+    <div class="table-wrap"><table id="table"></table></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>How to read this</h2>
+    </div>
+    <div class="notes">
+      <p><strong>Modelled</strong>: travel time, distance and congestion externality priced by a
+         BPR congestion model, the same for every method. This is what the optimiser minimised.</p>
+      <p><strong>Measured</strong>: the same routes driven through SUMO: Krauss car-following,
+         junction dynamics, signal cycles, lane-changing. The optimiser cannot see any of it, so
+         agreement between the two columns is evidence the model is worth optimising against, and
+         disagreement is evidence that it is not enough.</p>
+      <p><strong>Per vehicle</strong>: time and distance are shown per vehicle in both groups, never
+         as a fleet total beside a per-vehicle mean. The objective itself is a fleet total, which is
+         correct for ranking methods but not for reading against the measurements.</p>
+      <p><strong>model err %</strong>: how far SUMO's journey time sat from the modelled time for
+         the same routes. It is the honest measure of how much the surrogate can be trusted, and it
+         is reported whether or not it flatters the model.</p>
+      <p><strong>Every objective re-scores its own routes.</strong> A method's reported objective is
+         recomputed from the exact route set that was handed to SUMO, so the two columns in a row
+         always describe the same plan.</p>
+      <p><strong>Fleet</strong>: a mixed delivery fleet (van, truck, auto-rickshaw), all at the
+         <code>delivery</code> vehicle class because that is the only class every lane in the OSM
+         import permits. Departures are staggered over a 30-minute peak.</p>
+      <p><strong>open in SUMO</strong>: launches sumo-gui on the selected routes file, so the plan
+         can be watched rather than taken on trust.</p>
+    </div>
+  </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

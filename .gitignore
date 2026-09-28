@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Large binary data: regenerate with `qitransit bengaluru build`
+data/osm/*.pbf
+data/osm/*.osm
+data/osm/*.bz2
+data/networks/
+data/simulation/
+data/cache/
+data/demo/
+*.log
+
+# Generated experiment artefacts (keep the checked-in summaries under docs/)
+results/raw/
+results/plots/
+results/*.sqlite
+*.rou.xml
+*.net.xml
+*.sumocfg
+*.xml.bz
+*.tripit
+*.fcd.xml
+
+# SUMO output
+out/
+*.vehroutes.xml
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

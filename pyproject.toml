@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qitransit"
+version = "0.1.0"
+description = "Quantum-inspired metaheuristic optimisation of vehicle routes and shortest paths over SUMO-simulated urban traffic networks"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = [
+    "quantum-inspired",
+    "QPSO",
+    "vehicle-routing",
+    "traffic-simulation",
+    "SUMO",
+    "metaheuristic",
+]
+
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "matplotlib>=3.8",
+    "osmium>=4.3.1",
+    "pyproj>=3.7.2",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+qitransit = "qitransit.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/qitransit"]
+
+[tool.uv]
+package = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
