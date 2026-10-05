@@ -2,7 +2,10 @@
 
 Quantum techniques are a hot topic in Machine Learning and algorithmic optimisations. Yatri introduces quantum-inspired metaheuristics techniques for improving the Traffic routing and path searching of transit movement by taking advantage of the unconventional rules that quantum bits follow.  
 
-We use QPSO, QGA, QISEP and their local-search hybrids for finding the search spaces in classic Traffic routing algorithms and benchmarked against classical results on **Bengaluru road network data**  as baselines. We use **Eclipse SUMO** to simulate every candidate plan to verify and prove the optimiser claims and what the network does compared side by side.
+## Methodology
+- We use QPSO, QGA, QISEP and their local-search hybrids for finding the search spaces in classic Traffic routing algorithms
+- It is benchmarked against classical results on **Bengaluru road network data**  as baselines. 
+- **Eclipse SUMO** is used to simulate every candidate plan to verify and prove the optimiser claims and what the network does compared side by side.
 
 ```
    OpenStreetMap ──osmium──▶ bounding box ──netconvert──▶ bengaluru_central.net.xml
@@ -12,8 +15,8 @@ We use QPSO, QGA, QISEP and their local-search hybrids for finding the search sp
               BPR congestion model                        frozen traffic snapshot
               (the optimiser's only view)                  shared by every method
                         │                                            │
-       QPSO / QGA / QISEP  ·  PSO / GA / SA  ·  savings                │
-                        │  objective + per-vehicle routes             │
+       QPSO / QGA / QISEP  ·  PSO / GA / SA  ·  savings              │
+                        │  objective + per-vehicle routes            │
                         ▼                                            │
                  routes.xml ──▶ SUMO (Krauss, signals, lanes) ──▶ TraCI
                                                                      │
