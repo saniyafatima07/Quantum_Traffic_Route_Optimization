@@ -1,4 +1,4 @@
-# qitransit — Quantum-Inspired Traffic Routing & Transit Optimisation
+# Yatri — Quantum-Inspired Traffic Routing & Transit Optimisation
 
 Quantum-inspired metaheuristics (QPSO, QGA, QISEP) and their local-search
 hybrids, benchmarked against classical baselines on **real Bengaluru road
