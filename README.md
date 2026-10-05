@@ -21,6 +21,12 @@ compared side by side.
                                                                      │
                               journey time · time loss · CO₂ · odometer
 ```
+## Demo Video 
+
+
+https://github.com/user-attachments/assets/bebbb2c3-35b9-485e-b2a8-eb394d33c48e
+
+
 
 ## The demo
 
